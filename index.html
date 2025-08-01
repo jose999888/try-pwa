@@ -12,117 +12,42 @@
   <link rel="apple-touch-icon" href="/try-pwa/assets/img3.png" />
   </head>
   <body>
-    这个是测试pwa的，看看会不会热更新，重新试一下呢，为什么刚刚不行呢
+    这个是测试pwa的，看看会不会热更新
   <button id="test-btn">点击我测试js有没有失效</button>
 
-   <script>
-  document.addEventListener('DOMContentLoaded', () => {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('test-btn');
-    if (btn) {
-      btn.addEventListener('click', () => {
-        alert('JS 还在，点击生效吗吗吗吗吗吗吗！');
-        console.log('测试按钮被点了，时间：', new Date().toISOString());
-      });
-    }
+    btn.addEventListener('click', () => {
+      alert('JS 还在，点击生效！');
+      console.log('测试按钮被点了，时间：', new Date().toISOString());
+    });
   });
 
-  window.a = 2;
-  const SW_FALLBACK = false;
+      window.a = 2;
+      // 如果有问题，将此值改成true
+      SW_FALLBACK = false;
 
-  if ('serviceWorker' in navigator) {
-    // 用一个小 banner 提示新版本（会动态插入）
-    function showUpdateBanner(worker) {
-      // 避免重复
-      if (document.getElementById('update-banner')) return;
-
-      const banner = document.createElement('div');
-      banner.id = 'update-banner';
-      banner.textContent = '检测到新版本，点我刷新';
-      Object.assign(banner.style, {
-        position: 'fixed',
-        bottom: '12px',
-        left: '50%',
-        transform: 'translateX(-50%)',
-        background: '#1f6feb',
-        color: '#fff',
-        padding: '10px 18px',
-        borderRadius: '8px',
-        cursor: 'pointer',
-        zIndex: 9999,
-        fontFamily: 'system-ui, sans-serif',
-        boxShadow: '0 8px 24px rgba(31,111,235,0.3)',
-      });
-      banner.addEventListener('click', () => {
-        worker.postMessage({ type: 'SKIP_WAITING' });
-      });
-      document.body.appendChild(banner);
-    }
-
-    // 注册 SW（用相对路径更健壮，假设 index.html 在 /try-pwa/ 下）
-    const swPath = '/try-pwa/sw.js'; // 如果你的 sw.js 在 /try-pwa/sw.js，与页面同级用相对即可
-    const scopePath = '/try-pwa/';
-
-    if (!SW_FALLBACK) {
-      navigator.serviceWorker
-        .register(swPath, { scope: scopePath })
-        .then((registration) => {
-          console.log('Service Worker 注册成功！', registration);
-
-          // 如果已经有 waiting 的新 worker（旧页面仍被旧 controller 控制）
-          if (registration.waiting) {
-            showUpdateBanner(registration.waiting);
-          }
-
-          registration.addEventListener('updatefound', () => {
-            const newWorker = registration.installing;
-            newWorker.addEventListener('statechange', () => {
-              if (
-                newWorker.state === 'installed' &&
-                navigator.serviceWorker.controller
-              ) {
-                // 新版本准备好了但还没接管
-                showUpdateBanner(newWorker);
-              }
+      if ('serviceWorker' in navigator) {
+        if (!SW_FALLBACK) {
+          navigator.serviceWorker
+            .register('/try-pwa/sw.js', { scope: '/try-pwa/' })
+            .then((registration) => {
+              console.log('Service Worker 注册成功！');
+            })
+            .catch((error) => {
+              console.log('Service Worker 注册失败：', error);
             });
-          });
-
-          // 一旦新的 worker 接管页面，刷新
-          let refreshing = false;
-          navigator.serviceWorker.addEventListener('controllerchange', () => {
-            if (refreshing) return;
-            refreshing = true;
-            alert('新 SW 接管，刷新页面');
-            window.location.reload();
-          });
-        })
-        .catch((error) => {
-          console.error('Service Worker 注册失败：', error);
-        });
-
-      // 监听 beforeinstallprompt（可选：自定义安装按钮逻辑可以在这里挂）
-      window.addEventListener('beforeinstallprompt', (e) => {
-        console.log('beforeinstallprompt 触发', e);
-        // 你可以保存 e 并在自定义按钮上调用 e.prompt()
-        // e.preventDefault();
-        // deferredPrompt = e;
-      });
-    } else {
-      navigator.serviceWorker.getRegistration(scopePath).then((reg) => {
-        if (reg) {
-          reg.unregister().then(() => {
-            window.location.reload();
+        } else {
+          navigator.serviceWorker.getRegistration('/').then((reg) => {
+            reg && reg.unregister();
+            if (reg) {
+              window.location.reload();
+            }
           });
         }
-      });
-    }
-
-    // 监听来自 SW 的消息（如果 sw.js 里发了可以处理）
-    navigator.serviceWorker.addEventListener('message', (e) => {
-      console.log('来自 SW 的消息：', e.data);
-    });
-  }
-</script>
-
+      }
+    </script>
     <script src="./mock.js" type="text/javascript"></script>
   </body>
 </html>
