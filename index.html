@@ -46,6 +46,13 @@
             }
           });
         }
+        let refreshing = false;
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (refreshing) return;
+            refreshing = true;
+            alert('新 SW 接管，刷新页面');
+            window.location.reload();
+          });
       }
     </script>
     <script src="./mock.js" type="text/javascript"></script>
