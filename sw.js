@@ -1,4 +1,4 @@
-const version = 'v811';
+const version = 'v1';
 
 const preCacheName = 'pre-cache-' + version;
 const runtimeCacheName = 'runtime-cache'; // runtime不进行整体清除
