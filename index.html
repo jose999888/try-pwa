@@ -39,7 +39,7 @@ window.addEventListener('beforeinstallprompt', (e) => {
       if ('serviceWorker' in navigator) {
         if (!SW_FALLBACK) {
           navigator.serviceWorker
-            .register('/sw.js')
+            .register('/try-pwa/sw.js', { scope: '/try-pwa/' })
             .then((registration) => {
               console.log('Service Worker 注册成功！');
             })
