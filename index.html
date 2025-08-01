@@ -12,26 +12,18 @@
   <link rel="apple-touch-icon" href="/assets/img3.png" />
   </head>
   <body>
-    123
-    <script>
-let deferredPrompt;
+    这个是测试pwa的，看看会不会热更新
+  <button id="test-btn">点击我测试js有没有失效</button>
 
-window.addEventListener('beforeinstallprompt', (e) => {
-  e.preventDefault(); // 先阻止自动弹
-  deferredPrompt = e;
-  // 你可以显示一个自定义按钮，比如“安装到主屏”：
-  const btn = document.createElement('button');
-  btn.textContent = '安装应用';
-  document.body.appendChild(btn);
-  btn.addEventListener('click', async () => {
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log('用户选择:', outcome);
-    deferredPrompt = null;
-  });
-});
-</script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('test-btn');
+    btn.addEventListener('click', () => {
+      alert('JS 还在，点击生效！');
+      console.log('测试按钮被点了，时间：', new Date().toISOString());
+    });
+  });
+
       window.a = 2;
       // 如果有问题，将此值改成true
       SW_FALLBACK = false;
